@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Site Task Tracker</title>
+<title>Aleah's Task Tracker</title>
 <meta name="description" content="Prospecthelp task tracker for Jap and Aleah: clients, team filters and an SOP checklist sorted by priority.">
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2367492A'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='700' font-size='17' text-anchor='middle' fill='%23FCF4EA'%3EP%3C/text%3E%3C/svg%3E">
@@ -194,6 +194,20 @@ button{cursor:pointer}
 .notice{padding:12px 14px;border-radius:12px;background:var(--panel);border:1px solid var(--line);font-size:13px;color:var(--muted);margin-top:12px}
 .empty{padding:22px 16px;text-align:center;border-radius:16px;border:1.5px dashed var(--line);color:var(--muted);font-size:13px}
 .empty b{display:block;color:var(--ink);font-size:14px;margin-bottom:2px}
+:where(a.member){color:inherit;text-decoration:none}
+.selbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;margin-top:16px;display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;padding:10px 14px;border-radius:14px;background:var(--ink);color:var(--on-ink);box-shadow:var(--shadow)}
+.selbar .btn{background:transparent;color:var(--on-ink);border-color:color-mix(in srgb,var(--on-ink) 40%,transparent)}
+.selbar .btn:hover{border-color:var(--on-ink)}
+.selbar .btn.danger{background:var(--crit-bg);color:var(--crit-fg);border-color:var(--crit-bg)}
+.selall{display:flex;align-items:center;gap:8px;font-weight:600;font-size:13px;cursor:pointer}
+.selall input,.task .pick{accent-color:var(--crit-dot)}
+.selcount{font-size:13px;opacity:.85;font-variant-numeric:tabular-nums}
+.selact{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.task.selectable{cursor:pointer}
+.task.picked{background:color-mix(in srgb,var(--card) 65%,transparent);box-shadow:inset 0 0 0 1.5px currentColor}
+.selgroup{color:inherit;margin:2px 0 4px 2px}
+#select-btn[aria-pressed="true"]{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.head-actions{display:flex;gap:8px;flex-wrap:wrap}
 .toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--on-ink);padding:10px 16px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;transition:.2s;z-index:20;max-width:calc(100% - 32px)}
 .toast.show{opacity:1;transform:translateX(-50%)}
 
@@ -226,7 +240,7 @@ button{cursor:pointer}
   <div class="wrap">
     <div class="brand">
       <div class="mark" aria-hidden="true">P</div>
-      <div><h1>Task Tracker</h1><p>Prospecthelp · SEO &amp; web client work</p></div>
+      <div><h1>Task Tracker</h1><p id="board-sub">Prospecthelp · SEO &amp; web client work</p></div>
     </div>
     <div class="clock" aria-live="off">
       <div><span class="eyebrow">Fort Myers</span><b id="clk-fm">–</b></div>
@@ -236,8 +250,8 @@ button{cursor:pointer}
 </header>
 
 <main class="wrap layout">
-  <aside class="col team-col" aria-label="Team">
-    <div class="col-head"><h2>Team</h2></div>
+  <aside class="col team-col" aria-label="Boards">
+    <div class="col-head"><h2>Boards</h2></div>
     <div class="team-list" id="team"></div>
     <div class="summary" id="summary"></div>
   </aside>
@@ -271,7 +285,8 @@ button{cursor:pointer}
           <h2>SOP Checklist</h2>
           <div class="filters" id="filters"></div>
         </div>
-        <div class="row" style="flex:0 0 auto">
+        <div class="head-actions">
+          <button class="btn" type="button" id="select-btn" aria-pressed="false">Select</button>
           <button class="btn" type="button" id="add-task-btn">+ Add task</button>
         </div>
       </div>
@@ -285,12 +300,12 @@ button{cursor:pointer}
         <input type="file" id="pdf-input" accept="application/pdf,.pdf" hidden>
         <div class="drop-opts">
           <label for="up-client">Client <select id="up-client"></select></label>
-          <label for="up-who">Assign to <select id="up-who"><option value="jap">Jap</option><option value="aleah">Aleah</option><option value="">Unassigned</option></select></label>
         </div>
       </div>
 
       <div class="review" id="review" hidden></div>
       <div id="status"></div>
+      <div class="selbar" id="selbar" hidden></div>
       <div class="groups" id="groups"></div>
     </div>
   </section>
