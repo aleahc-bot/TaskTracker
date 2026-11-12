@@ -6,7 +6,9 @@ Prospecthelp's tracker for Jap (SEO Analyst) and Aleah (Web Specialist): team fi
 
 | Path | What it is |
 | --- | --- |
-| `public/index.html`, `public/app.js` | The page itself |
+| `public/index.html` | Aleah's board (the main address) |
+| `public/jap.html` | Jap's board (the address ending in `/jap`) |
+| `public/app.js` | Shared page code for both boards |
 | `public/logos/` | The 9 starting client logos |
 | `api/data.js` | Loads clients and tasks (adds the 9 starting clients the first time) |
 | `api/tasks.js`, `api/clients.js` | Add, edit, check off and delete |
@@ -49,6 +51,8 @@ For the most accurate results, write SOPs with priority headings. You can still 
 Optional: `ANTHROPIC_MODEL` picks a different Claude model (default `claude-sonnet-5-5`).
 
 ## Good to know
+- **Two boards:** Aleah's tasks are at the main address and Jap's are at `/jap`. Clients are shared, tasks are not. Switch boards from the left column.
+- **Delete or finish many at once:** click **Select**, tick tasks (or "Select all" / "Select all in High"), then **Mark done** or **Delete**.
 - **No login:** anyone with the link can view and edit, so share the URL only with your team.
 - **Updates between you and Jap:** the page checks for each other's changes every 15 seconds and whenever you switch back to the tab.
 - **Scanned PDFs:** PDFs made from photos or scans have no readable text. Export SOPs from Google Docs or Word instead.
