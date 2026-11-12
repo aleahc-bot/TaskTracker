@@ -194,7 +194,7 @@ $("client-form").onsubmit=async e=>{e.preventDefault();
 
 /* ---------- upload selects ---------- */
 function syncUploadClient(){const sel=$("up-client");const cur=S.client||sel.value||"";sel.replaceChildren();selectOpts(sel,clientOpts(),S.client||cur)}
-function updateDropText(){const s=$("drop-sub");if(s)s.textContent=S.ai?"Claude reads it and sorts each task into Critical, High, Medium or Low. You review before anything is saved.":"Each line becomes a task you can sort into Critical, High, Medium or Low before saving. (Auto-sorting turns on once an Anthropic API key is added in Vercel.)"}
+function updateDropText(){const s=$("drop-sub");if(s)s.textContent=S.ai?"Claude reads it and sorts each task into Critical, High, Medium or Low. You review before anything is saved.":"Tasks are sorted into Critical, High, Medium or Low automatically from the PDF's headings, labels, due dates and keywords. Check them, then save."}
 
 /* ---------- PDF intake ---------- */
 const drop=$("drop"),pdfInput=$("pdf-input");
@@ -231,11 +231,11 @@ async function handlePdf(file){
   if(S.ai){
     step("Claude is sorting tasks by priority… this can take up to a minute.");
     try{const r=await api("/api/sort",{text:text.slice(0,80000),fileName:file.name,clientName:cName,today:today()});items=r.tasks;ai=true}
-    catch(e){toast(e.message+" Lines were added as Medium instead.")}
+    catch(e){toast(e.message+" Used the built-in sorting instead.")}
   }
   if(!live())return;
   if(!items||!items.length){ai=false;
-    items=text.split("\n").map(l=>l.replace(/^[\s•\-–*\d.)\]]+/,"").trim()).filter(l=>l.length>8&&l.length<200).slice(0,40).map(l=>({title:l,priority:"medium",start:null,end:null,note:""}));
+    items=window.sortSop?window.sortSop(text,today()):[];
   }
   S.review={file:file.name,source,clientId,assignee,items,ai};
   showReview();
@@ -248,7 +248,7 @@ function showReview(){
     list.append(h("div",{class:"rv"},sel,
       h("input",{class:"field",value:it.title,"aria-label":"Task title",maxlength:"200",oninput:e=>{it.title=e.target.value}}),
       h("button",{class:"btn sm ghost",type:"button","aria-label":"Remove "+it.title,onclick:()=>{R.items.splice(i,1);showReview()}},"✕"),
-      h("div",{class:"dates"},h("input",{class:"field",type:"date",value:it.start||"","aria-label":"Start date",onchange:e=>{it.start=e.target.value||null}}),h("input",{class:"field",type:"date",value:it.end||"","aria-label":"End date",onchange:e=>{it.end=e.target.value||null}}))));
+      it.why?h("div",{class:"why"},"Why: "+it.why):null,h("div",{class:"dates"},h("input",{class:"field",type:"date",value:it.start||"","aria-label":"Start date",onchange:e=>{it.start=e.target.value||null}}),h("input",{class:"field",type:"date",value:it.end||"","aria-label":"End date",onchange:e=>{it.end=e.target.value||null}}))));
   });
   const counts=PRI.map(p=>R.items.filter(x=>x.priority===p.id).length);
   const cName=(clientById(R.clientId)||{}).name;
@@ -260,7 +260,7 @@ function showReview(){
     }catch(err){toast(err.message);b.disabled=false;b.textContent="Add tasks"}}},"Add "+R.items.length+" tasks");
   setReview(h("div",null,
     h("h3",null,"Review tasks from "+R.file),
-    h("p",{class:"sub"},(R.ai?"Claude sorted these into priorities. ":"Each line was added as Medium. ")+"Change a priority, edit a title or remove a row, then add them."+(cName?" Client: "+cName+".":"")+(R.assignee?" Assigned to "+memberName(R.assignee)+".":"")),
+    h("p",{class:"sub"},(R.ai?"Claude sorted these into priorities. ":"Sorted automatically from the PDF's priority headings, labels, due dates and keywords. ")+"Change a priority, edit a title or remove a row, then add them."+(cName?" Client: "+cName+".":"")+(R.assignee?" Assigned to "+memberName(R.assignee)+".":"")),
     h("div",{class:"filters",style:"margin:0 0 12px"},PRI.map((p,i)=>h("span",{class:"chip plain"},p.name.replace(" Priority","")+": "+counts[i]))),
     list,
     h("div",{class:"row",style:"justify-content:flex-end;margin-top:12px"},h("button",{class:"btn ghost",type:"button",style:"flex:0 0 auto",onclick:()=>{S.review=null;setReview(null)}},"Discard"),h("span",{style:"flex:0 0 auto"},save))));

@@ -150,6 +150,7 @@ button{cursor:pointer}
 .review .sub{font-size:12.5px;color:var(--muted);margin:2px 0 12px}
 .rv-list{display:grid;gap:8px}
 .rv{display:grid;grid-template-columns:120px minmax(0,1fr) auto;gap:8px;align-items:center;padding:8px;border-radius:12px;background:var(--card);border:1px solid var(--line)}
+.rv .why{grid-column:2/3;font-size:11.5px;color:var(--muted);margin-top:-4px}
 .rv .dates{display:flex;gap:6px;grid-column:2/3}
 .rv .dates input{flex:1;min-width:0;font-size:12px;padding:5px 8px}
 .rv select{padding:7px 8px;border-radius:9px;border:1px solid var(--line);font-size:12.5px;font-weight:600}
@@ -213,7 +214,7 @@ button{cursor:pointer}
   .sop{padding:16px;border-radius:18px}
   .rv{grid-template-columns:minmax(0,1fr) auto}
   .rv select{grid-column:1/2}
-  .rv .dates{grid-column:1/-1}
+  .rv .dates,.rv .why{grid-column:1/-1}
   .clock{display:none}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
@@ -297,6 +298,7 @@ button{cursor:pointer}
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="/sorter.js"></script>
 <script src="/app.js"></script>
 </body>
 </html>
