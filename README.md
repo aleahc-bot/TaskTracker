@@ -11,6 +11,7 @@ Prospecthelp's tracker for Jap (SEO Analyst) and Aleah (Web Specialist): team fi
 | `api/data.js` | Loads clients and tasks (adds the 9 starting clients the first time) |
 | `api/tasks.js`, `api/clients.js` | Add, edit, check off and delete |
 | `api/upload.js` | Saves SOP PDFs and new logos to Vercel Blob (max 4.4 MB per file) |
+| `public/sorter.js` | Free priority sorting from headings, labels, dates and keywords |
 | `api/sort.js` | Sends PDF text to Claude to sort by priority (only if an API key is set) |
 
 ## Put it live
@@ -37,7 +38,14 @@ The 9 clients appear the first time the site loads.
 2. In Vercel → **Settings → Environment Variables**, add `ANTHROPIC_API_KEY` with that key.
 3. Redeploy. The drop zone text changes to say Claude sorts the tasks.
 
-Without a key, each line of a PDF comes in as Medium and you set priorities in the review step before saving.
+Without a key, the site sorts tasks for free using `public/sorter.js`:
+1. **Priority headings** in the PDF, like "Critical Priority" or "LOW PRIORITY:", set the priority for the tasks under them.
+2. **Labels** on a line, like `[High]`, `(Urgent)` or `Priority: Low`.
+3. **Due dates**: due within 2 days becomes Critical, within 7 days becomes at least High.
+4. **Keywords**, like "broken", "security" or "SSL" for Critical; "sitemap", "redirect" or "page speed" for High; "nice to have" or "later" for Low.
+5. Anything else becomes Medium.
+
+For the most accurate results, write SOPs with priority headings. You can still change any priority in the review step.
 Optional: `ANTHROPIC_MODEL` picks a different Claude model (default `claude-sonnet-5-5`).
 
 ## Good to know
