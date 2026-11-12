@@ -1,6 +1,6 @@
-import { db, TASKS, parse, newId, cleanTask, send, fail } from "./_lib.js";
+import { db, TASKS, parse, newId, cleanTask, ids, send, fail } from "./_lib.js";
 
-// POST /api/tasks  { action: "create" | "createMany" | "update" | "delete", ... }
+// POST /api/tasks  { action: "create" | "createMany" | "update" | "updateMany" | "delete" | "deleteMany", ... }
 export default async function handler(req, res) {
   if (req.method !== "POST") return send(res, 405, { error: "Use POST." });
   try {
@@ -14,7 +14,7 @@ export default async function handler(req, res) {
       const fields = {};
       const created = [];
       list.forEach((t, i) => {
-        const task = cleanTask(t || {}, { done: false, note: "", start: null, end: null, assignee: "", clientId: "", priority: "medium" });
+        const task = cleanTask(t || {}, { done: false, note: "", start: null, end: null, assignee: "", clientId: "", priority: "medium", board: "aleah" });
         if (!task.title) return;
         task.id = newId() + i;
         task.createdAt = now + i;
@@ -35,6 +35,32 @@ export default async function handler(req, res) {
       next.doneAt = next.done ? current.doneAt || Date.now() : null;
       await r.hset(TASKS, { [id]: JSON.stringify(next) });
       return send(res, 200, { task: next });
+    }
+
+    if (body.action === "updateMany") {
+      const list = ids(body.ids);
+      if (!list.length) return send(res, 400, { error: "Pick at least one task." });
+      const patch = body.patch || {};
+      const fields = {};
+      const updated = [];
+      for (const id of list) {
+        const current = parse(await r.hget(TASKS, id));
+        if (!current) continue;
+        const next = cleanTask(patch, current);
+        if (!next.title) next.title = current.title;
+        next.doneAt = next.done ? current.doneAt || Date.now() : null;
+        fields[id] = JSON.stringify(next);
+        updated.push(next);
+      }
+      if (updated.length) await r.hset(TASKS, fields);
+      return send(res, 200, { tasks: updated });
+    }
+
+    if (body.action === "deleteMany") {
+      const list = ids(body.ids);
+      if (!list.length) return send(res, 400, { error: "Pick at least one task." });
+      await r.hdel(TASKS, ...list);
+      return send(res, 200, { deleted: list.length });
     }
 
     if (body.action === "delete") {

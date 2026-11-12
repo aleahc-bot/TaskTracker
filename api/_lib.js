@@ -22,6 +22,7 @@ export const SEEDED = "tracker:seeded";
 
 export const PRIORITIES = ["critical", "high", "medium", "low"];
 export const MEMBERS = ["jap", "aleah", ""];
+export const ids = (v) => (Array.isArray(v) ? [...new Set(v.map(String))].filter(Boolean).slice(0, 500) : []);
 
 const SEED_CLIENTS = [
   ["minnicks", "Minnicks Concrete", "Squarespace"],
@@ -73,6 +74,7 @@ export function cleanTask(t, base = {}) {
   if ("title" in t) out.title = str(t.title, 200);
   if ("priority" in t) out.priority = pri(t.priority);
   if ("assignee" in t) out.assignee = who(t.assignee);
+  if ("board" in t) out.board = t.board === "jap" ? "jap" : "aleah";
   if ("clientId" in t) out.clientId = str(t.clientId, 60);
   if ("start" in t) out.start = date(t.start);
   if ("end" in t) out.end = date(t.end);
