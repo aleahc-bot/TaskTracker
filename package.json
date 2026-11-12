@@ -1,0 +1,12 @@
+{
+  "name": "site-task-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Prospecthelp task tracker for Jap and Aleah: clients, team filters and an SOP checklist sorted by priority.",
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@upstash/redis": "^1.41.0",
+    "@vercel/blob": "^2.9.0"
+  }
+}
